@@ -73,7 +73,7 @@ The histogram above shows the distribution of team kills at the 20-minute mark o
 
 ### Bivariate Analysis
 
-I perform bivariate analysis on the `firstbaron` and `win` features to understand the relationship between whether securing the first Baron affects the outcome of the match. I use a bar plot to visualize the this relationship:
+I perform bivariate analysis on the `firstbaron` and `win` features to understand the relationship between whether securing the first Baron affects the outcome of the match. I use a grouped bar plot to visualize the this relationship:
 
 <iframe
   src="assets/firstbaron-win-plot.html"
