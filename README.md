@@ -223,6 +223,21 @@ In this case, I computed an observed test statistic of 0.0 and got a p-value of 
 Hence, I fail to reject the null hypothesis and conclude that the distribution of `side` when `firstbaron` is missing is the same as the distribution of `side` when `firstbaron` is not missing. This suggests that the missingness of the `firstbaron` column is not dependent on the `side` column.
 
 
+### Handling Missing Values
+
+Now that I have completed my assessment of the missingness of the data, I can handle the missing values in the `firstbaron` and `[stat]at20` columns. Counting the nulls, I find that there are 2778 out of 19510 rows with null values. Since I cannot impute these values (no way to know if a team got the first baron or not), I drop these rows by dropping all rows with a `datacompleteness` value of `partial`. I also drop the `datacompleteness` column, as it is no longer needed. Lastly, without any missing values, I convert the `firstbaron` and `[stat]at20` columns from floats to integers as that is the appropriate data type for these columns.
+
+Below is the first five rows of the `league_cleaned` dataset after handling the missing values:
+
+| gameid           | league   | side   |   gamelength | win   |   firstbaron |   goldat20 |   xpat20 |   csat20 |   killsat20 |   assistsat20 |   deathsat20 |
+|:-----------------|:---------|:-------|-------------:|:------|-------------:|-----------:|---------:|---------:|------------:|--------------:|-------------:|
+| LOLTMNT99_132542 | TSC      | Blue   |         1446 | True  |            1 |      38246 |    42428 |      718 |          10 |            21 |            5 |
+| LOLTMNT99_132542 | TSC      | Red    |         1446 | False |            0 |      33998 |    40290 |      668 |           5 |            10 |           10 |
+| LOLTMNT99_132665 | TSC      | Blue   |         2122 | True  |            0 |      36104 |    43211 |      701 |          11 |            17 |            8 |
+| LOLTMNT99_132665 | TSC      | Red    |         2122 | False |            1 |      35327 |    40489 |      677 |           8 |            11 |           11 |
+| LOLTMNT99_132755 | TSC      | Blue   |         2099 | True  |            1 |      33386 |    42148 |      666 |           7 |             9 |            7 |
+
+
 
 ## Hypothesis Testing
 
