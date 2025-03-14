@@ -241,7 +241,7 @@ Below is the first five rows of the `league_cleaned` dataset after handling the 
 
 ## Hypothesis Testing
 
-In this section, I aim to determine whether there is a (positive) relationship between securing the first Baron and the amount of gold a team has at the 20-minute mark of the game. In League of Legends, gold is a key resource that players use to buy items and improve their champions' stats, and is thought by many to be the most important resource in the game and a good indicator of whether a team is winning or losing.
+In this section, I aim to determine whether there is a (positive) relationship between securing the first Baron and the amount of gold a team has at the 20-minute mark of the game. In order to show a positive relationship, I choose the difference in mean gold between teams that get the first Baron and teams that do not get the first Baron as my test statistic, without taking the absolute value.
 
 **Null Hypothesis**: The distribution of gold (at minute 20) of teams that get the first baron is the same as the distribution of gold (at minute 20) of teams that do not get the first baron.
 
@@ -267,4 +267,43 @@ Note that since this is not a randomized controlled trial, we cannot definitivel
 
 
 ## Framing a Prediction Problem
+
+In League of Legends, gold is a key resource and is arguably the most important statistic in the game. Players use gold to buy powerful items that improve their champions' statistics, and is often considered a good indicator of whether a team is winning or losing.
+
+In past sections, I showed that teams that got the first baron, on average, won more games than teams that did not get the first baron. I also showed that teams that got the first baron are more likely to have more gold at minute 20, by performing a hypothesis test.
+
+Thus, the prediction model I will build in the following sections will be based on the following prediction problem: **Can we predict the amount of gold that a team may have at minute 20, based on their other statistics at this point of the game?**
+
+Since gold is numerical data, this model will logically be a regression model. At the time of prediction, the predictive model will have the following information: `firstbaron`, `league`, `csat20`, `xpat20`, `killsat20`, `deathsat20`, `assistsat20`, and `goldat20`. I will evaluate my predictive models on the $r^2$, RMSE (root mean square error), and MAE (mean absolute error) metrics.
+- $r^2$: This metric measures how well of a fit the model is to the data.
+- RMSE: This is a popular metric used to measure the amount of error in a regression model.
+- MAE: This metric also measures the amount of error in a regression model, but is less sensitive to outliers than RMSE, and is easier to interpret.
+
+
+
+## Baseline Model
+
+For my baseline model, I use a simple linear regression model trained on the following features: `firstbaron` and `csat20`.
+
+Why I chose these features:
+- `firstbaron`: From our previous analysis, we saw that teams that got the first baron are more likely to have more gold at minute 20.
+- `csat20`: CS (creep score) is the number of minions or monsters that a player has killed. It is the primary way to gain gold in the game, and is thus a strong predictor of gold at minute 20.
+
+Among these features, `firstbaron` is nominal while `csat20` is numerical. Since `firstbaron` is already in binary format, I do not need to perform any encoding on it. However, I do need to standardize `csat20` to ensure that both features are on the same scale. I use the `StandardScaler` from `sklearn.preprocessing` to standardize `csat20`.
+
+After splitting the data into training and testing sets, I fit the baseline model on the training data and obtain the following performance metrics:
+
+| Evaluation Metric   |   Training Set Performance |   Test Set Performance |
+|:--------------------|---------------------------:|-----------------------:|
+| R Squared           |                   0.192689 |               0.193629 |
+| RMSE                |                2395.02     |            2456.89     |
+| MAE                 |                1837.42     |            1879.66     |
+
+Though the evaluation metrics are slightly worse with the test data than the training data, they are still very similar, so we can conclude that the model generalizes well.
+
+The low $r^2$ value of 0.193629 suggests that there are other important features that we have not included in the model that could improve its performance. The RMSE and MAE values are also quite high, indicating that the model is not very accurate in predicting the amount of gold at minute 20. This is expected, as we are only using two features to make our predictions. In the next section, we will improve upon this baseline model by adding more features to the model and/or tuning hyperparameters to improve its performance.
+
+
+
+## Final Model
 
