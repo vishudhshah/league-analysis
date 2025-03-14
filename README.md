@@ -1,5 +1,7 @@
 # League of Legends Statistical Analysis
 
+Author: Vishudh Shah
+
 ## Introduction
 
 ### Introduction to League of Legends
