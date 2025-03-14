@@ -241,3 +241,30 @@ Below is the first five rows of the `league_cleaned` dataset after handling the 
 
 ## Hypothesis Testing
 
+In this section, I aim to determine whether there is a (positive) relationship between securing the first Baron and the amount of gold a team has at the 20-minute mark of the game. In League of Legends, gold is a key resource that players use to buy items and improve their champions' stats, and is thought by many to be the most important resource in the game and a good indicator of whether a team is winning or losing.
+
+**Null Hypothesis**: The distribution of gold (at minute 20) of teams that get the first baron is the same as the distribution of gold (at minute 20) of teams that do not get the first baron.
+
+**Alternative Hypothesis**: Teams that get the first baron are more likely to have more gold at minute 20 than teams that do not get the first baron.
+
+**Test Statistic**: Difference in mean gold between teams that get the first baron vs do not get the first baron.
+
+**Significance Level**: 1%
+
+Computing the observed test statistic, I get a value of 2198.1607960016045. Below is a plot of the empirical distribution of the test statistic from the permutation test, along with the observed test statistic:
+
+<iframe
+  src="assets/gold-simulation.html"
+  width="800"
+  height="600"
+  frameborder="0"
+></iframe>
+
+The p-value obtained from the permutation test is 0.0, which is less than the significance level of 1%. Hence, I reject the null hypothesis and conclude that there is a significant positive relationship between securing the first Baron and the amount of gold a team has at the 20-minute mark of the game.
+
+Note that since this is not a randomized controlled trial, we cannot definitively say that securing the first Baron causes a team to have more gold at minute 20. We can only make inferences about the relationship between the two variables. However, the strong evidence against the null hypothesis suggests that there is indeed a positive correlation between securing the first Baron and having more gold at minute 20. This result is significant as it indicates that securing the first Baron is a key factor in determining a team's performance in the match, and teams should prioritize this objective in their strategies.
+
+
+
+## Framing a Prediction Problem
+
