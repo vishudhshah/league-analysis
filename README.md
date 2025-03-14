@@ -36,6 +36,7 @@ We first filtered the complete dataset to only include the features relevant to 
 There are 2778 rows where the `firstbaron` value is null. Note that all the `[stat]at20` values are also null in the rows where the `firstbaron` is null, and they are only null in these rows. These rows are indicated by a `datacompleteness` value of `partial`, which indicates that there may have been issues collecting this data for specific games. While traditional data cleaning usually also handles missing values, we held off on this step until after our assessment of the missingness of the data.
 
 Below is the first five rows of the cleaned dataset:
+
 | gameid             | datacompleteness   | league   | side   |   gamelength | win   |   firstbaron |   goldat20 |   xpat20 |   csat20 |   killsat20 |   assistsat20 |   deathsat20 |
 |:-------------------|:-------------------|:---------|:-------|-------------:|:------|-------------:|-----------:|---------:|---------:|------------:|--------------:|-------------:|
 | 10660-10660_game_1 | partial            | DCup     | Blue   |         1886 | False |          nan |        nan |      nan |      nan |         nan |           nan |          nan |
@@ -51,7 +52,7 @@ We performed univariate analysis on the `gamelength` and `killsat20` features to
 
 <iframe
   src="assets/gamelength-distribution.html"
-  width="1000"
+  width="800"
   height="600"
   frameborder="0"
 ></iframe>
