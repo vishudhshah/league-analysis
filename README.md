@@ -51,7 +51,7 @@ We performed univariate analysis on the `gamelength` and `killsat20` features to
 
 <iframe
   src="assets/gamelength-distribution.html"
-  width="800"
+  width="1000"
   height="600"
   frameborder="0"
 ></iframe>
