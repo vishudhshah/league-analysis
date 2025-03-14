@@ -291,7 +291,9 @@ Why I chose these features:
 
 Among these features, `firstbaron` is nominal while `csat20` is numerical. Since `firstbaron` is already in binary format, I do not need to perform any encoding on it. However, I do need to standardize `csat20` to ensure that both features are on the same scale. I use the `StandardScaler` from `sklearn.preprocessing` to standardize `csat20`.
 
-After splitting the data into training and testing sets, I fit the baseline model on the training data and obtain the following performance metrics:
+After splitting the data into training and testing sets, I fit the baseline model on the training data using the `LinearRegression` model from `sklearn.linear_model`. While the use of `StandardScaler` is not necessary for linear regression, it helps with interpretability of the coefficients and is good practice when working with features on different scales.
+
+I then evaluate the model on both the training and test sets using the $r^2$, RMSE, and MAE metrics.
 
 | Evaluation Metric   |   Training Set Performance |   Test Set Performance |
 |:--------------------|---------------------------:|-----------------------:|
@@ -307,3 +309,72 @@ The low $r^2$ value of 0.193629 suggests that there are other important features
 
 ## Final Model
 
+To improve upon my baseline model, I first create a residual plot to see if there are any patterns in the residuals. A residual plot is a scatter plot of the residuals on the y-axis and the predicted values on the x-axis. If there are any patterns in the residuals, it suggests that the model is not capturing all of the information in the data.
+
+<iframe
+  src="assets/base-residuals.html"
+  width="800"
+  height="600"
+  frameborder="0"
+></iframe>
+
+The vertical spread is quite uniform, indicating that the linear regression model is appropriate for this data. However, the two clusters of points in plot, indicates that there may be two different distributions of data in the dataset. Using my knowledge of the game, I think this could be due to the fact that I am using data from multiple leagues, and the teams in these leagues may have different playstyles and strategies.
+
+To create a better final model, I include the `league` and `xpat20` features. I will also engineer a new feature called `kdaat20` that is the ratio of (`killsat20` + `assistsat20`) to `deathsat20`.
+
+Relationship between each feature and gold at minute 20:
+- `league`: Different leagues may have different playstyles and strategies, which could affect the amount of gold a team has at minute 20. For example, the LPL is known for its aggressive playstyle, which may lead to more kills and thus more gold.
+- `xpat20`: While XP (experience points) and gold are separate resources, they are often gained simultaneously. For example, killing a minion or monster grants both XP and gold. This may sound similar to CS, however, some actions, like killing a player, may provide XP and gold but not CS, and vice versa.
+- `kdaat20`: KDA is a common aggregate of kills, deaths, and assists in a game. It measures a player's or team's performance in the game.
+  - Kills and assists are directly correlated with gold, as they provide gold when a player gets a kill or an assist.
+  - Deaths, however, are not directly correlated with gold, as they do not cause you to lose gold. Instead, when you die, you miss out on potential gold earnings from minions, jungle camps, or objectives during your death timer. Additionally, your death rewards gold to the enemy team if they secure a kill, which can contribute to their overall gold advantage.
+
+Of these new features, `league` is nominal, while `xpat20` and `kdaat20` are numerical. I encoded `league` using one-hot encoding (`OneHotEncoder` from `sklearn.preprocessing`) to convert it into a numerical format. I also standardized `xpat20` and `kdaat20` using the `StandardScaler` from `sklearn.preprocessing`.
+
+After finalizing which features I will use for my final model, I use polynomial features (`PolynomialFeatures` from `sklearn`) to capture non-linear relationships between the features and the target. Note that in the `PolynomialFeatures` step, a degree needs to be set. This is a hyperparameter for which I need to use cross-validation techniques to find the optimal value. I first used `GridSearchCV` for this task, however, due to computational constraints, I switched to `RandomizedSearchCV` to perform the same task in a more efficient manner. I tested degree values from 1 to 10, with 4-fold cross-validation, and found that the optimal degree value is 2.
+
+Fitting the final model on the training data using the `LinearRegression` model from `sklearn.linear_model`, I then evaluate the model on both the training and test sets using the $r^2$, RMSE, and MAE metrics.
+
+| Evaluation Metric   |   Training Set Performance |   Test Set Performance |
+|:--------------------|---------------------------:|-----------------------:|
+| R Squared           |                   0.624591 |               0.603781 |
+| RMSE                |                1633.21     |            1722.21     |
+| MAE                 |                1270.59     |            1336.26     |
+
+All the training and testing metrics have improved significantly from the baseline model, indicating that the final model is indeed better. While the evaluation metric values are still not great, from the residual plot above we saw that the data had high variance, so we may not be able to improve the model much further without overfitting. We can also create a residual plot of the final model to see if there are any patterns in the residuals:
+
+<iframe
+  src="assets/final-residuals.html"
+  width="800"
+  height="600"
+  frameborder="0"
+></iframe>
+
+In the plot above, the vertical spread is still quite uniform, and the clustering pattern we saw in the baseline model is no longer present, indicating that the final model is indeed better than the baseline model.
+
+
+
+## Fairness Analysis
+
+In this section, I will assess if my final model is fair across different groups.
+I choose to segregate the groups based on the `side`. Specifically, the question I try to answer in this section is: **Does my model perform differently for the red side vs the blue side?**
+To answer this question, I performed a permutation test and examined the result of the difference in MAE (Mean Absolute Error) between the two groups. I used the MAE instead of the RMSE because the MAE is more interpretable and is less sensitive to outliers. Since in this case, I only want to determine whether there is a difference, I take the absolute value of the difference in MAE for my test statistic.
+
+**Null Hypothesis**: The final model is fair. The MAE of the model is the same for the red and blue sides
+
+**Alternative Hypothesis**: The final model is unfair. The MAE of the model is different for the red side than it is for the blue side.
+
+**Test Statistic**: Absolute difference in MAE.
+
+**Significance Level**: 1%
+
+After computing an observed test statistics of 10.87667126602014, I performed a permutation test and obtained a p-value of 0.488. Below is a plot of the empirical distribution of the test statistic from the permutation test, along with the observed test statistic:
+
+<iframe
+  src="assets/fairness.html"
+  width="800"
+  height="600"
+  frameborder="0"
+></iframe>
+
+With a p-value of 0.488, which is greater than the significance level of 1%, I fail to reject the null hypothesis and conclude that the final model is fair across the two groups. This suggests that the model performs similarly for both the red and blue sides, and there is no significant difference in its performance based on the side of the map on which a team plays.
